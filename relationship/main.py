@@ -1,5 +1,6 @@
 import relationship
 
+
 def test():
     rel = relationship.Relationship()
     rel.follow("A", ["B"])
