@@ -16,6 +16,7 @@ class Relationship:
     def followed_by(self, target_user):
         # This returns a list that contains
         # users that follows target_user
+        # TODO: Maybe we can make a list that records this from the beginning?
         return [
             user
             for user, followings in self.relationship.items()
