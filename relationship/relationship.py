@@ -74,12 +74,20 @@ class Relationship:
             for user in {left for left, _ in lr}
         }
 
+    def nodes(self):
+        return sorted(
+            list(
+                set(self.relationship.keys())
+                | {j for i in self.relationship.values() for j in i}
+            )
+        )
+
     def symmetric(self, lr):
         return lr + [(y, x) for x, y in lr if (y, x) not in lr]
 
     def transitive(self, lr):
         # Sort for consistent indexing
-        nodes = sorted({i for i, j in lr} | {j for i, j in lr})
+        nodes = self.nodes()
         # Create adjacency matrix
         matrix = [[True if (x, y) in lr else False for y in nodes] for x in nodes]
 
@@ -94,45 +102,18 @@ class Relationship:
             (nodes[i], nodes[j]) for i in range(n) for j in range(n) if matrix[i][j]
         ]
 
-    def generate_circles(self, users):
-        """
-        Generate social circles (i.e., equivalence classes) using binary relation properties:
-        symmetric and transitive closures.
-    
-        Parameters:
-        rel: An instance of Relationship that contains follow relationships.
-        users: List of all usernames.
-        
-        Returns:
-        circles: A list of sets, where each set represents a social circle (an equivalence class).
-        """
-        # Convert the relationship dictionary into a binary relation (list of (user, followed) pairs)
-        lr = self.dr2lr(self.relationship)
-        # Compute the symmetric closure: if (A, B) is in the relation, ensure (B, A) is also included.
-        sym_lr = self.symmetric(lr)
-        # Compute the transitive closure (using Warshall's algorithm) of the symmetric relation.
-        trans_lr = self.transitive(sym_lr)
-        # Convert the transitive closure (list of pairs) back into a dictionary mapping:
-        # each key maps to the list of users in the same equivalence class.
-        eq_dict = self.lr2dr(trans_lr)
+    def groups(self):
+        eq_rel = self.lr2dr(
+            self.transitive(self.symmetric(self.dr2lr(self.relationship)))
+        )
+        groups = {
+            frozenset(eq_rel[node]) if node in eq_rel else node: sorted(eq_rel[node])
+            if node in eq_rel
+            else [node]
+            for node in self.nodes()
+        }
+        return list(groups.values())
 
-        circles = []
-        for user in users:
-            # For each user, its equivalence class is the set of users related to it (if available)
-            # plus the user itself.
-            if user in eq_dict:
-                group = set(eq_dict[user])
-                group.add(user)
-            else:
-                group = {user}  # Isolated user forms a singleton circle.
-
-            # Add the group to circles if it is not already included.
-            if not any(group == existing for existing in circles):
-                circles.append(group)
-        
-        # Sort circles by the smallest member (alphabetically) for consistent output.
-        circles.sort(key=lambda s: sorted(s)[0])
-        return circles
 
 def test():
     rel = Relationship()
@@ -146,9 +127,11 @@ def test():
     rel.follow("H", [])
     rel.follow("I", [])
     rel.follow("J", ["A"])
+    print(rel.groups())
     print(rel.recommend("A"))
     print(rel.recommend("B"))
     print(rel.recommend("C"))
+
 
 if __name__ == "__main__":
     test()
