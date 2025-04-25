@@ -20,8 +20,8 @@
           packages = with pkgs; [ python312 ] ++
             (with pkgs.python312Packages; [
               pip
-              numpy
               ruff
+              pyright
               venvShellHook
             ]);
         };
