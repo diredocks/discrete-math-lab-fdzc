@@ -18,6 +18,9 @@ def repl():
     calc = Resolver()
     while True:
         line = input("> ")
+        if line == "BYE":
+            print("< bye!")
+            exit()
         lines = generate_binary_replacements(line)
         for line in lines:
             try:
