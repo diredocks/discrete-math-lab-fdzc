@@ -6,12 +6,11 @@ import re
 def generate_binary_replacements(expr) -> list[str]:
     letters = sorted(set(re.findall(r"[a-zA-Z]", expr)))
     combinations = itertools.product("01", repeat=len(letters))
-    results = []
-    for combo in combinations:
-        mapping = dict(zip(letters, combo))
-        replaced = "".join(mapping[c] if c in mapping else c for c in expr)
-        results.append(replaced)
-    return results
+    return [
+        "".join(mapping[c] if c in mapping else c for c in expr)
+        for combo in combinations
+        if (mapping := dict(zip(letters, combo)))
+    ]
 
 
 def repl():
