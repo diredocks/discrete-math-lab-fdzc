@@ -44,18 +44,18 @@ def main():
     )
 
     calc = Resolver()
-    print("\n满足条件时为真的命题：")
+    print("\n恭喜你：")
     count = 0
     for expr, truth_values in cond_expressions:
         if calc.parse(expr):
-            count += 1
-            print(f"方案 {count} ：", end="")
             true_props = [props[k] for k, v in truth_values.items() if v == "1"]
             if true_props:
+                count += 1
+                print(f"方案 {count} ：", end="")
                 print("，".join(true_props))
-    print(f"共 {count} 个方案")
+    print(f"我们一共找到 {count} 个方案")
     if count == 0:
-        print("没有任何组合满足条件。")
+        print("没有任何组合满足条件，别灰心，起码这数学上无解。")
 
 
 if __name__ == "__main__":
