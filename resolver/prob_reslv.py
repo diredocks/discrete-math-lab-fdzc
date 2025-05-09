@@ -13,7 +13,7 @@ def generate_binary_replacements(
     ]
 
 
-def main():
+def rep():
     props = {}
     props_n = int(input("请输入命题的数量: "))
 
@@ -35,7 +35,7 @@ def main():
     for n in list(range(conds_n)):
         inp = input("> ").strip()
         if inp:
-            conds.append(inp)
+            conds.append("(" + inp + ")")
     if not conds:
         raise ValueError("未输入条件。")
 
@@ -59,4 +59,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    while True:
+        rep()
